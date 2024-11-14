@@ -1,0 +1,110 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Configurar para gráficos en línea
+%matplotlib inline
+# Establecer la semilla para reproducibilidad
+np.random.seed(42)
+# Simular datos
+n_registros = 500
+especialidades = ['Matemáticas', 'Ciencias', 'Lengua', 'Historia', 'Geografía', 
+                  'Educación Física', 'Arte']
+# Simulación de los datos del colegio
+data = {
+    'Especialidad': np.random.choice(especialidades, n_registros),
+    'TiempoEspera': np.random.normal(loc=30, scale=10, size=n_registros).clip(0, None), # Tiempo en minutos
+    'Quejas': np.random.poisson(lam=1.5, size=n_registros),
+    'Sugerencias': np.random.poisson(lam=0.5, size=n_registros)
+}
+df = pd.DataFrame(data)
+# 1. Diagrama de Pareto: Quejas por Especialidad
+quejas_por_especialidad = df.groupby('Especialidad')['Quejas'].sum().sort_values(ascending=False)
+cumulative_sum = quejas_por_especialidad.cumsum()
+cumulative_percentage = 100 * cumulative_sum / quejas_por_especialidad.sum()
+plt.figure(figsize=(12, 6))
+plt.bar(quejas_por_especialidad.index, quejas_por_especialidad, color='skyblue', label='Número de Quejas')
+plt.plot(cumulative_percentage.index, cumulative_percentage, color='red', marker='o', label='Porcentaje Acumulado')
+plt.xticks(rotation=45)
+plt.xlabel('Especialidad')
+plt.ylabel('Número de Quejas')
+plt.title('Diagrama de Pareto: Quejas por Especialidad')
+plt.legend()
+plt.grid(axis='y')
+plt.tight_layout()
+plt.show()
+# 2. Gráfico de Control para el Tiempo de Espera
+plt.figure(figsize=(12, 6))
+mean = df['TiempoEspera'].mean()
+std_dev = df['TiempoEspera'].std()
+plt.plot(df['TiempoEspera'].rolling(window=30).mean(), label='Media Móvil de Tiempo de Espera')
+plt.axhline(mean, color='green', linestyle='--', label='Media')
+plt.axhline(mean + 3*std_dev, color='red', linestyle='--', label='Límite Superior de Control')
+plt.axhline(mean - 3*std_dev, color='blue', linestyle='--', label='Límite Inferior de Control')
+plt.xlabel('Número de Registro')
+plt.ylabel('Tiempo de Espera (min)')
+plt.title('Gráfico de Control: Tiempo de Espera')
+plt.legend()
+plt.grid()
+plt.tight_layout()
+plt.show()
+# 3. Histograma del Tiempo de Espera
+plt.figure(figsize=(12, 6))
+plt.hist(df['TiempoEspera'], bins=20, color='skyblue', edgecolor='black')
+plt.xlabel('Tiempo de Espera (min)')
+plt.ylabel('Frecuencia')
+plt.title('Histograma del Tiempo de Espera')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# 4. Diagrama de Correlación entre Tiempo de Espera y Quejas
+plt.figure(figsize=(12, 6))
+sns.scatterplot(x='TiempoEspera', y='Quejas', data=df)
+plt.xlabel('Tiempo de Espera (min)')
+plt.ylabel('Número de Quejas')
+plt.title('Diagrama de Correlación entre Tiempo de Espera y Quejas')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# 5. Función de Pérdida de Taguchi
+target_time = 30
+penalty_factor = 1  # Factor de penalización para la pérdida
+# Función de pérdida de Taguchi
+def taguchi_loss(time, target, penalty):
+    return penalty * (time - target) ** 2
+df['PérdidaTaguchi'] = taguchi_loss(df['TiempoEspera'], target_time, penalty_factor)
+# Histograma de la Pérdida de Taguchi
+plt.figure(figsize=(12, 6))
+plt.hist(df['PérdidaTaguchi'], bins=20, color='skyblue', edgecolor='black')
+plt.xlabel('Pérdida de Taguchi')
+plt.ylabel('Frecuencia')
+plt.title('Histograma de la Pérdida de Taguchi')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# 6. Análisis de Quejas y Sugerencias
+quejas_y_sugerencias = df[['Quejas', 'Sugerencias']].sum()
+print("Total de Quejas:", quejas_y_sugerencias['Quejas'])
+print("Total de Sugerencias:", quejas_y_sugerencias['Sugerencias'])
+# 7. Análisis de Tendencias (Suponiendo una columna de fechas)
+df['Fecha'] = pd.date_range(start='2024-01-01', periods=n_registros, freq='D')
+# Tendencias de Tiempo de Espera
+plt.figure(figsize=(12, 6))
+plt.plot(df.groupby('Fecha')['TiempoEspera'].mean(), color='skyblue', label='Tiempo de Espera Promedio')
+plt.xlabel('Fecha')
+plt.ylabel('Tiempo de Espera (min)')
+plt.title('Análisis de Tendencias del Tiempo de Espera')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# 8. Evaluación 360º
+# Crear un DataFrame de Evaluación 360º
+evaluacion_360 = {
+    'Categoría': ['Profesores', 'Estudiantes', 'Administrativos'],
+    'Satisfacción': [4.2, 3.8, 4.0],  # Puntajes promedio de satisfacción en una escala de 1 a 5
+    'Comentarios': ['Buena enseñanza y atención', 'El tiempo de espera es alto', 'Mejor coordinación']
+}
+df_evaluacion = pd.DataFrame(evaluacion_360)
+print("Evaluación 360º:")
+print(df_evaluacion)
