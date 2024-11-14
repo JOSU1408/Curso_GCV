@@ -1,0 +1,62 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+# Datos iniciales (antes) para los tres escenarios con diferentes variables
+np.random.seed(42)
+n_estudiantes = 100
+# Escenario 1: Diferentes causas y tiempos de espera (Distribución normal con media de 20 y desviación de 5)
+causas_esc1 = ['Falta de profesores', 'Falta de materiales', 'Retrasos de estudiantes', 'Problemas de infraestructura']
+frecuencias_esc1 = [30, 20, 40, 10]
+tiempos_espera_esc1 = np.random.normal(loc=20, scale=5, size=n_estudiantes)
+# Escenario 2: Diferentes causas y tiempos de espera (Distribución normal con media de 25 y desviación de 6)
+causas_esc2 = ['Falta de materiales', 'Retrasos en horarios', 'Problemas en aulas', 'Otros']
+frecuencias_esc2 = [25, 30, 35, 10]
+tiempos_espera_esc2 = np.random.normal(loc=25, scale=6, size=n_estudiantes)
+# Escenario 3: Diferentes causas y tiempos de espera (Distribución normal con media de 15 y desviación de 4)
+causas_esc3 = ['Problemas de infraestructura', 'Falta de recursos', 'Retrasos en actividades', 'Otros']
+frecuencias_esc3 = [40, 20, 30, 10]
+tiempos_espera_esc3 = np.random.normal(loc=15, scale=4, size=n_estudiantes)
+# Función para generar los gráficos y análisis para cada escenario
+def generar_graficos_y_analisis(escenario, tiempos_espera, causas, frecuencias, mejora_factor, titulo):
+    # Diagrama de Pareto
+    plt.figure(figsize=(10, 6))
+    plt.bar(causas, frecuencias)
+    plt.title(f'{titulo} - Causas de Tiempos de Espera (Antes)')
+    plt.xlabel('Causas')
+    plt.ylabel('Frecuencia')
+    plt.grid(axis='y')
+    plt.show()
+    # Análisis del tiempo de espera
+    tiempo_promedio_antes = np.mean(tiempos_espera)
+    print(f'{titulo} - Tiempo promedio de espera (Antes): {tiempo_promedio_antes:.2f} minutos')
+    # Simulación del estado después de aplicar mejoras
+    mejora_tiempo_espera = tiempo_promedio_antes * mejora_factor  # Mejora según el factor
+    nuevos_estudiantes = int(n_estudiantes * 0.6)  # Reducción del 40% en el número de estudiantes afectados
+    # Generar nuevos tiempos de espera
+    nuevos_tiempos_espera = np.random.normal(loc=mejora_tiempo_espera, scale=5, size=nuevos_estudiantes)
+    # Diagrama de Control
+    plt.figure(figsize=(10, 6))
+    plt.plot(np.arange(1, nuevos_estudiantes + 1), nuevos_tiempos_espera, marker='o', linestyle='-')
+    plt.axhline(y=mejora_tiempo_espera, color='r', linestyle='--', label='Límite superior (Mejorado)')
+    plt.title(f'{titulo} - Diagrama de Control - Tiempos de Espera (Después)')
+    plt.xlabel('Número de Estudiantes')
+    plt.ylabel('Tiempo de Espera (minutos)')
+    plt.legend()
+    plt.grid()
+    plt.show()
+    # Análisis del tiempo de espera después de la mejora
+    tiempo_promedio_despues = np.mean(nuevos_tiempos_espera)
+    print(f'{titulo} - Tiempo promedio de espera (Después): {tiempo_promedio_despues:.2f} minutos\n')
+# Generar gráficos y análisis para cada escenario
+# Escenario 1: Tiempos de espera iniciales en 20 minutos con causas relacionadas con falta de personal y materiales
+generar_graficos_y_analisis(
+    "Escenario 1", tiempos_espera_esc1, causas_esc1, frecuencias_esc1, 0.6, "Escenario 1"
+)
+# Escenario 2: Tiempos de espera iniciales en 25 minutos con causas relacionadas con problemas de materiales y retrasos
+generar_graficos_y_analisis(
+    "Escenario 2", tiempos_espera_esc2, causas_esc2, frecuencias_esc2, 0.5, "Escenario 2"
+)
+# Escenario 3: Tiempos de espera iniciales en 15 minutos con causas relacionadas con infraestructura y recursos
+generar_graficos_y_analisis(
+    "Escenario 3", tiempos_espera_esc3, causas_esc3, frecuencias_esc3, 0.7, "Escenario 3"
+)
