@@ -1,0 +1,49 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Crear datos simulados (7x7)
+data = {
+    "Admisiones": ["Juan Pérez", "Ana Gómez", "Carlos Díaz", "María Santos", "Luis Torres", "Sofía Ramos", "Miguel López"],
+    "Matrícula": ["Matemáticas", "Ciencias", "Historia", "Inglés", "Computación", "Arte", "Deportes"],
+    "Gestión Académica": [85, 95, 70, 88, 92, 75, 80],  # Notas
+    "Recursos Humanos": ["María López", "Luis García", "Rosa Sánchez", "Juan Rivas", "Ana Morales", "Carlos Gómez", "Laura Pérez"],
+    "Infraestructura": ["Aula 202", "Lab 101", "Aula 304", "Aula 102", "Lab 201", "Aula 303", "Lab 102"],
+    "Finanzas": [500, 450, 500, 520, 480, 510, 470],  # Pagos (S/)
+    "Soporte IT": ["Resuelto", "Pendiente", "Resuelto", "Resuelto", "Pendiente", "Resuelto", "Pendiente"]
+}
+
+# Convertir datos a un DataFrame
+df = pd.DataFrame(data)
+
+# Mostrar los datos
+print("Datos del ERP:")
+print(df)
+
+# Crear gráficos para visualizar la simulación
+plt.figure(figsize=(15, 8))
+
+# Gráfico 1: Notas de gestión académica (Gráfico de barras)
+plt.subplot(1, 2, 1)
+sns.barplot(x="Admisiones", y="Gestión Académica", data=df, palette="Blues_d")
+plt.title("Notas de Gestión Académica")
+plt.xlabel("Estudiantes")
+plt.ylabel("Nota")
+
+# Gráfico 2: Pagos en Finanzas (Gráfico de barras)
+plt.subplot(1, 2, 2)
+sns.barplot(x="Admisiones", y="Finanzas", data=df, palette="Greens_d")
+plt.title("Pagos por Estudiante")
+plt.xlabel("Estudiantes")
+plt.ylabel("Monto (S/)")
+
+# Gráfico 3: Estado de soporte IT (Gráfico de pastel)
+status_counts = df["Soporte IT"].value_counts()
+plt.figure(figsize=(6, 6))
+plt.pie(status_counts, labels=status_counts.index, autopct='%1.1f%%', colors=["#4CAF50", "#FF5722"], startangle=140)
+plt.title("Estado de Tickets de Soporte IT")
+plt.show()
+
+# Ajustar disposición de los gráficos
+plt.tight_layout()
+plt.show()
